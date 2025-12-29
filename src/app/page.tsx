@@ -8,6 +8,7 @@ import Footer from "@/components/footer/footer";
 import Testimonials from "@/components/testimonials/testimonials";
 import Link from "next/link";
 import { Bot, BarChart3, Zap, Users, ChevronRight, User, LayoutDashboard, LogOut } from 'lucide-react';
+import Image from 'next/image';
 
 interface UserData {
   id: string
@@ -139,7 +140,7 @@ export default function Home() {
                     className="flex items-center gap-2 p-1 rounded-full border-2 border-green-500/50 hover:border-green-400 transition-all"
                   >
                     {user.avatar_url ? (
-                      <img
+                      <Image
                         src={user.avatar_url}
                         alt="Profile"
                         className="w-8 h-8 rounded-full object-cover"
@@ -178,9 +179,10 @@ export default function Home() {
                             <div className="px-4 py-4 border-b border-green-500/10">
                               <div className="flex items-center gap-3">
                                 {user.avatar_url ? (
-                                  <img
+                                  <Image
                                     src={user.avatar_url}
                                     alt="Profile"
+                                    
                                     className="w-10 h-10 rounded-full object-cover ring-2 ring-green-500/30"
                                   />
                                 ) : (

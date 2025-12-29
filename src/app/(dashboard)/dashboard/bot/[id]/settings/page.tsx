@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/dashboard/bot/[id]/settings/page.tsx
 'use client'
@@ -7,9 +6,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { 
-  ArrowLeft, Save, Trash2, ExternalLink, RefreshCw, CheckCircle, 
-  Palette, Settings as SettingsIcon, Bot, MessageSquare, Image,
+import Image from 'next/image'
+import {
+  ArrowLeft, Save, Trash2, ExternalLink, RefreshCw, CheckCircle,
+  Palette, Settings as SettingsIcon, Bot, MessageSquare,
+  Image as ImageIcon,   // ✅ rename icon
   Search, Upload, Download
 } from 'lucide-react'
 
@@ -47,7 +48,7 @@ const GRADIENT_PRESETS = [
 
 // Solid color presets
 const COLOR_PRESETS = [
-  '#16a34a', '#059669', '#0d9488', '#0891b2', 
+  '#16a34a', '#059669', '#0d9488', '#0891b2',
   '#2563eb', '#7c3aed', '#c026d3', '#e11d48'
 ]
 
@@ -84,7 +85,7 @@ const parseGradient = (gradientStr: string) => {
   try {
     const match = gradientStr.match(/linear-gradient\((\d+deg),\s*(#[a-fA-F0-9]{6})\s*\d*%?,\s*(#[a-fA-F0-9]{6})\s*\d*%?\)/)
     if (match) return { angle: match[1], startColor: match[2], endColor: match[3] }
-  } catch {}
+  } catch { }
   return defaultResult
 }
 
@@ -97,7 +98,7 @@ export default function BotSettingsPage() {
   const [name, setName] = useState('')
   const [welcomeMessage, setWelcomeMessage] = useState('')
   const [systemPrompt, setSystemPrompt] = useState('')
-  
+
   // Color states
   const [colorMode, setColorMode] = useState<'solid' | 'gradient'>('solid')
   const [widgetColor, setWidgetColor] = useState('#16a34a')
@@ -106,14 +107,14 @@ export default function BotSettingsPage() {
   const [customStartColor, setCustomStartColor] = useState('#10b981')
   const [customEndColor, setCustomEndColor] = useState('#059669')
   const [customAngle, setCustomAngle] = useState('135deg')
-  
+
   // Widget states
   const [widgetIcon, setWidgetIcon] = useState('bi-chat-left-text')
   const [widgetLogo, setWidgetLogo] = useState('')
   const [widgetPosition, setWidgetPosition] = useState('bottom-right')
   const [sheetUrl, setSheetUrl] = useState('')
   const [isActive, setIsActive] = useState(true)
-  
+
   // UI states
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -270,8 +271,12 @@ export default function BotSettingsPage() {
 
       setSuccess('Settings saved successfully!')
       setTimeout(() => setSuccess(''), 3000)
-    } catch (err: any) {
-      setError(err.message || 'Failed to save settings')
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('Failed to save settings')
+      }
     } finally {
       setIsSaving(false)
     }
@@ -533,22 +538,20 @@ export default function BotSettingsPage() {
                   <button
                     type="button"
                     onClick={() => setColorMode('solid')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      colorMode === 'solid'
-                        ? 'border-green-500 bg-green-500/10'
-                        : 'border-white/[0.08] hover:border-white/20'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${colorMode === 'solid'
+                      ? 'border-green-500 bg-green-500/10'
+                      : 'border-white/[0.08] hover:border-white/20'
+                      }`}
                   >
                     <span className="text-sm text-white font-medium">Solid Color</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setColorMode('gradient')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      colorMode === 'gradient'
-                        ? 'border-green-500 bg-green-500/10'
-                        : 'border-white/[0.08] hover:border-white/20'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${colorMode === 'gradient'
+                      ? 'border-green-500 bg-green-500/10'
+                      : 'border-white/[0.08] hover:border-white/20'
+                      }`}
                   >
                     <span className="text-sm text-white font-medium">Gradient</span>
                   </button>
@@ -565,11 +568,10 @@ export default function BotSettingsPage() {
                         key={color}
                         type="button"
                         onClick={() => setWidgetColor(color)}
-                        className={`w-10 h-10 rounded-xl transition-all ${
-                          widgetColor === color 
-                            ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' 
-                            : 'hover:scale-105'
-                        }`}
+                        className={`w-10 h-10 rounded-xl transition-all ${widgetColor === color
+                          ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110'
+                          : 'hover:scale-105'
+                          }`}
                         style={{ backgroundColor: color }}
                       />
                     ))}
@@ -601,22 +603,20 @@ export default function BotSettingsPage() {
                       <button
                         type="button"
                         onClick={() => setGradientType('preset')}
-                        className={`p-3 rounded-xl border-2 text-sm transition-all ${
-                          gradientType === 'preset'
-                            ? 'border-green-500 bg-green-500/10 text-green-400'
-                            : 'border-white/[0.08] text-white/60 hover:border-white/20'
-                        }`}
+                        className={`p-3 rounded-xl border-2 text-sm transition-all ${gradientType === 'preset'
+                          ? 'border-green-500 bg-green-500/10 text-green-400'
+                          : 'border-white/[0.08] text-white/60 hover:border-white/20'
+                          }`}
                       >
                         Use Presets
                       </button>
                       <button
                         type="button"
                         onClick={() => setGradientType('custom')}
-                        className={`p-3 rounded-xl border-2 text-sm transition-all ${
-                          gradientType === 'custom'
-                            ? 'border-green-500 bg-green-500/10 text-green-400'
-                            : 'border-white/[0.08] text-white/60 hover:border-white/20'
-                        }`}
+                        className={`p-3 rounded-xl border-2 text-sm transition-all ${gradientType === 'custom'
+                          ? 'border-green-500 bg-green-500/10 text-green-400'
+                          : 'border-white/[0.08] text-white/60 hover:border-white/20'
+                          }`}
                       >
                         Custom Colors
                       </button>
@@ -633,11 +633,10 @@ export default function BotSettingsPage() {
                             key={preset.name}
                             type="button"
                             onClick={() => setWidgetGradient(preset.value)}
-                            className={`h-14 rounded-xl border-2 transition-all ${
-                              widgetGradient === preset.value
-                                ? 'border-green-500 ring-2 ring-green-500/30'
-                                : 'border-white/[0.08] hover:border-white/20'
-                            }`}
+                            className={`h-14 rounded-xl border-2 transition-all ${widgetGradient === preset.value
+                              ? 'border-green-500 ring-2 ring-green-500/30'
+                              : 'border-white/[0.08] hover:border-white/20'
+                              }`}
                             style={{ background: preset.value }}
                             title={preset.name}
                           />
@@ -695,11 +694,10 @@ export default function BotSettingsPage() {
                               key={angle.value}
                               type="button"
                               onClick={() => setCustomAngle(angle.value)}
-                              className={`p-3 rounded-xl border-2 transition-all text-lg ${
-                                customAngle === angle.value
-                                  ? 'border-green-500 bg-green-500/10 text-white'
-                                  : 'border-white/[0.08] text-white/60 hover:border-white/20'
-                              }`}
+                              className={`p-3 rounded-xl border-2 transition-all text-lg ${customAngle === angle.value
+                                ? 'border-green-500 bg-green-500/10 text-white'
+                                : 'border-white/[0.08] text-white/60 hover:border-white/20'
+                                }`}
                             >
                               {angle.name}
                             </button>
@@ -710,7 +708,7 @@ export default function BotSettingsPage() {
                       {/* Preview */}
                       <div>
                         <label className="block text-sm font-medium text-white/60 mb-2">Preview</label>
-                        <div 
+                        <div
                           className="h-14 rounded-xl border-2 border-white/[0.08]"
                           style={{ background: generateCustomGradient() }}
                         />
@@ -774,11 +772,10 @@ export default function BotSettingsPage() {
                               setShowIconPicker(false)
                               setIconSearch('')
                             }}
-                            className={`p-3 rounded-lg flex flex-col items-center ${
-                              widgetIcon === icon.value
-                                ? 'bg-green-500/20 border-2 border-green-500'
-                                : 'hover:bg-white/[0.05] border-2 border-transparent'
-                            }`}
+                            className={`p-3 rounded-lg flex flex-col items-center ${widgetIcon === icon.value
+                              ? 'bg-green-500/20 border-2 border-green-500'
+                              : 'hover:bg-white/[0.05] border-2 border-transparent'
+                              }`}
                           >
                             <i className={`${icon.value} text-2xl text-white`}></i>
                             <span className="text-xs text-white/60 mt-1">{icon.name}</span>
@@ -807,7 +804,14 @@ export default function BotSettingsPage() {
                 {widgetLogo ? (
                   <div className="flex items-center space-x-4 p-4 border-2 border-green-500/30 rounded-xl bg-green-500/5">
                     <div className="w-16 h-16 rounded-lg flex items-center justify-center overflow-hidden border-2 border-white/10 bg-white/5">
-                      <img src={widgetLogo} alt="Widget logo" className="w-12 h-12 object-contain" />
+                      <Image
+                        src={widgetLogo}
+                        alt="Widget logo"
+                        width={48}
+                        height={48}
+                        className="object-contain"
+                      />
+
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">Logo uploaded</p>
@@ -825,7 +829,8 @@ export default function BotSettingsPage() {
                       id="logo-upload"
                     />
                     <label htmlFor="logo-upload" className="cursor-pointer">
-                      <Image className="w-8 h-8 mx-auto mb-2 text-white/40" />
+                      <ImageIcon className="w-8 h-8 mx-auto mb-2 text-white/40" />
+
                       <p className="text-sm text-white/60">
                         {uploadingLogo ? 'Uploading...' : 'Click to upload logo'}
                       </p>
@@ -842,22 +847,20 @@ export default function BotSettingsPage() {
                   <button
                     type="button"
                     onClick={() => setWidgetPosition('bottom-right')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      widgetPosition === 'bottom-right'
-                        ? 'border-green-500 bg-green-500/10'
-                        : 'border-white/[0.08] hover:border-white/20'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${widgetPosition === 'bottom-right'
+                      ? 'border-green-500 bg-green-500/10'
+                      : 'border-white/[0.08] hover:border-white/20'
+                      }`}
                   >
                     <span className="text-sm text-white">Bottom Right</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setWidgetPosition('bottom-left')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      widgetPosition === 'bottom-left'
-                        ? 'border-green-500 bg-green-500/10'
-                        : 'border-white/[0.08] hover:border-white/20'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${widgetPosition === 'bottom-left'
+                      ? 'border-green-500 bg-green-500/10'
+                      : 'border-white/[0.08] hover:border-white/20'
+                      }`}
                   >
                     <span className="text-sm text-white">Bottom Left</span>
                   </button>
@@ -879,7 +882,14 @@ export default function BotSettingsPage() {
                       style={{ ...currentStyle, boxShadow: '0 10px 40px rgba(16, 185, 129, 0.3)' }}
                     >
                       {widgetLogo ? (
-                        <img src={widgetLogo} alt="Logo" className="w-8 h-8 object-contain" />
+                        <Image
+                          src={widgetLogo}
+                          alt="Chat widget logo"
+                          width={32}
+                          height={32}
+                          className="object-contain"
+                        />
+
                       ) : (
                         <i className={`${widgetIcon} text-white text-2xl`}></i>
                       )}

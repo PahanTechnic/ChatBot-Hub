@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/dashboard/page.tsx
 'use client'
@@ -26,9 +27,7 @@ export default function Dashboard() {
   const [messageCount, setMessageCount] = useState(0)
   const router = useRouter()
 
-  useEffect(() => {
-    checkUser()
-  }, [])
+  
 
   const checkUser = async () => {
     try {
@@ -49,6 +48,10 @@ export default function Dashboard() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    checkUser()
+  }, [checkUser])
 
   const loadBots = async (userId: string) => {
     try {

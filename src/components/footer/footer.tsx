@@ -10,7 +10,6 @@ import {
     MapPin,
     Phone,
     ArrowRight,
-    Sparkles,
     Heart,
     Globe,
     Shield,

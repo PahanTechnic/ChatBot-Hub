@@ -6,6 +6,7 @@
 import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Bot as BotIcon, AlertCircle, Send, Loader2 } from 'lucide-react'
 
 // Icon mapping

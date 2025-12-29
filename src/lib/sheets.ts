@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { google } from 'googleapis'
 
 export async function connectToGoogleSheets() {
@@ -65,11 +66,13 @@ export async function getSheetData(sheetUrl: string) {
       }
 
       const rowData: Record<string, string> = {}
-      headers.forEach((header: string, index: string | number) => {
+
+      headers.forEach((header: string, index: number) => {
         if (header && row[index]) {
-          rowData[header.toLowerCase().trim()] = row[index].toString().trim()
+          rowData[header.toLowerCase().trim()] = String(row[index]).trim()
         }
       })
+
 
       // Create content based on available fields
       let content = ''

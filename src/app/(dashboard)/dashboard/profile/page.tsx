@@ -9,7 +9,7 @@ import { User as UserIcon, Save, Calendar, Bot, MessageSquare, Mail, Shield, Arr
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
+  const [, setProfile] = useState<any>(null)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -26,10 +26,9 @@ export default function ProfilePage() {
   const [message, setMessage] = useState({ type: '', text: '' })
   const router = useRouter()
 
-  useEffect(() => {
-    loadProfile()
-  }, [])
+  
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadProfile = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -99,6 +98,10 @@ export default function ProfilePage() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadProfile()
+  }, [loadProfile])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()

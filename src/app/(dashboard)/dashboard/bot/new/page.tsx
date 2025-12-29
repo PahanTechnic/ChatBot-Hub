@@ -19,18 +19,15 @@ export default function NewBotPage() {
   const router = useRouter()
 
   const colorPresets = [
-    '#16a34a', '#059669', '#0d9488', '#0891b2', 
+    '#16a34a', '#059669', '#0d9488', '#0891b2',
     '#2563eb', '#7c3aed', '#c026d3', '#e11d48'
   ]
 
-  useEffect(() => {
-    checkUser()
-  }, [])
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const checkUser = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         router.push('/signin')
         return
@@ -38,7 +35,6 @@ export default function NewBotPage() {
 
       setUser(user)
 
-      // Load user profile from database
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -56,6 +52,11 @@ export default function NewBotPage() {
     }
   }
 
+  useEffect(() => {
+    checkUser()
+  }, [checkUser])
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSaving(true)
@@ -63,7 +64,7 @@ export default function NewBotPage() {
 
     try {
       console.log('User ID:', user.id)
-      
+
       // First, check if profile exists
       const { data: existingProfile, error: checkError } = await supabase
         .from('profiles')
@@ -76,7 +77,7 @@ export default function NewBotPage() {
       // If profile doesn't exist, create it first
       if (!existingProfile) {
         console.log('Creating new profile...')
-        
+
         const { data: newProfile, error: profileError } = await supabase
           .from('profiles')
           .insert({
@@ -173,7 +174,7 @@ export default function NewBotPage() {
       <nav className="relative z-50 border-b border-white/[0.08] bg-white/[0.02] backdrop-blur-xl sticky top-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <button 
+            <button
               onClick={() => router.push('/dashboard')}
               className="flex items-center space-x-2 text-white/60 hover:text-green-400 transition-colors"
             >
@@ -270,16 +271,15 @@ export default function NewBotPage() {
                       key={color}
                       type="button"
                       onClick={() => setWidgetColor(color)}
-                      className={`w-10 h-10 rounded-xl transition-all ${
-                        widgetColor === color 
-                          ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' 
+                      className={`w-10 h-10 rounded-xl transition-all ${widgetColor === color
+                          ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110'
                           : 'hover:scale-105'
-                      }`}
+                        }`}
                       style={{ backgroundColor: color }}
                     />
                   ))}
                 </div>
-                
+
                 {/* Custom Color */}
                 <div className="flex items-center space-x-4">
                   <div className="relative">

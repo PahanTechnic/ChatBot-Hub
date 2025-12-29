@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { ArrowLeft, Settings, Code, MessageSquare, RefreshCw, ExternalLink, Copy, Check, Bot, Calendar, User, Activity, Database, Eye } from 'lucide-react'
+import { ArrowLeft, Settings, Code, MessageSquare, RefreshCw, ExternalLink, Copy, Check, Bot, Calendar, Activity, Database, Eye } from 'lucide-react'
 
 interface BotType {
   id: string

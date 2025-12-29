@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/dashboard/messages/page.tsx
 'use client'
@@ -5,7 +6,18 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { MessageSquare, Bot as BotIcon, User, Clock, Filter, ArrowLeft, RefreshCw, ChevronDown } from 'lucide-react'
+import {
+  MessageSquare,
+  Bot as BotIcon,
+  Clock,
+  Filter,
+  ArrowLeft,
+  RefreshCw,
+  ChevronDown,
+  User as UserIcon
+} from 'lucide-react'
+
+
 
 interface Message {
   id: string
@@ -35,10 +47,9 @@ export default function MessagesPage() {
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
 
-  useEffect(() => {
-    loadData()
-  }, [selectedBot])
+  
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -98,6 +109,10 @@ export default function MessagesPage() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadData()
+  }, [loadData, selectedBot])
 
   if (isLoading) {
     return (
@@ -207,7 +222,7 @@ export default function MessagesPage() {
                           : 'bg-green-500/10 border-green-500/20'
                       }`}>
                         {message.role === 'user' ? (
-                          <User className="w-5 h-5 text-blue-400" />
+                          <UserIcon className="w-5 h-5 text-blue-400" />
                         ) : (
                           <BotIcon className="w-5 h-5 text-green-400" />
                         )}

@@ -11,6 +11,7 @@ import {
     Building2,
     TrendingUp
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Testimonials() {
     const testimonialsData = [
@@ -87,11 +88,14 @@ export default function Testimonials() {
                 <div className="flex gap-3 mb-4">
                     <div className="relative">
                         <div className="absolute inset-0 bg-green-500/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <img 
-                            className="relative w-12 h-12 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-green-500/40 transition-all" 
-                            src={testimonial.image} 
-                            alt={testimonial.name} 
-                        />
+                        <Image 
+  src={testimonial.image} 
+  alt={testimonial.name}
+  width={48}
+  height={48}
+  className="relative rounded-full object-cover ring-2 ring-white/10 group-hover:ring-green-500/40 transition-all"
+/>
+
                     </div>
                     <div className="flex flex-col flex-1">
                         <div className="flex items-center gap-1.5">

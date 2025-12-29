@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -118,7 +117,7 @@ export function FloatingChatButton({ botId }: FloatingChatButtonProps) {
 
   // ===== SIMPLE: Only Bootstrap Icon =====
   const widgetIcon = bot.widget_icon || 'bi-chat-left-text'
-  
+
   const widgetColor = bot.widget_color || '#10b981'
 
   const extractBaseColor = (color: string) => {
@@ -229,8 +228,8 @@ export function FloatingChatButton({ botId }: FloatingChatButtonProps) {
             homeUrl={bot.home_url || 'https://yoursite.com'}
             onClose={() => setIsOpen(false)}
             embedded={false}
-            name={bot.name}
           />
+
         )}
 
         {/* Button Container */}

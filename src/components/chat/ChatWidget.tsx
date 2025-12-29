@@ -65,7 +65,7 @@ function DropdownMenu({
 }: {
   isOpen: boolean
   onClose: () => void
-  menuButtonRef: React.RefObject<HTMLButtonElement>
+  menuButtonRef: React.RefObject<HTMLButtonElement | null> // ✅ FIX
   position: 'bottom-right' | 'bottom-left'
   onCheckDataSet: () => void
   onPopOut: () => void

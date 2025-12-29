@@ -1,9 +1,10 @@
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
 
 export function formatDate(date: string | Date): string {
   return new Date(date).toLocaleDateString('en-US', {
@@ -68,10 +69,7 @@ export function extractColors(color: string): {
   }
 }
 
-<<<<<<< HEAD
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-=======
->>>>>>> 81090bce0913689b860becfb3c5663bb9905d7e4
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number

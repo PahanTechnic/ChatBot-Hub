@@ -38,6 +38,7 @@ async function testGoogleSheetConnection(sheetUrl: string): Promise<{ success: b
     return { success: true, count: dataRows }
   } catch (error) {
     return { success: false, count: 0, error: 'Connection failed' }
+    console.error('Error testing Google Sheet connection:', error)
   }
 }
 
@@ -111,6 +112,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,

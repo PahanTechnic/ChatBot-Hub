@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Groq from 'groq-sdk'
 
 const groq = new Groq({
