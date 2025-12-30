@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
-// app/signin/page.tsx
+// ===============================================
+// STEP 2: app/signin/page.tsx - Fixed Version
+// ===============================================
+
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -16,7 +17,27 @@ export default function SignIn() {
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
     const [showPassword, setShowPassword] = useState(false)
+    const [isCheckingSession, setIsCheckingSession] = useState(true)
     const router = useRouter()
+
+    // Check existing session on mount
+    useEffect(() => {
+        const checkExistingSession = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession()
+                if (session?.user?.email_confirmed_at) {
+                    // Already logged in, redirect to dashboard
+                    router.replace('/dashboard')
+                    return
+                }
+            } catch (error) {
+                console.error('Session check error:', error)
+            } finally {
+                setIsCheckingSession(false)
+            }
+        }
+        checkExistingSession()
+    }, [router])
 
     const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -26,7 +47,7 @@ export default function SignIn() {
         try {
             // Sign in with Supabase Auth
             const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-                email: email,
+                email: email.trim(),
                 password: password,
             })
 
@@ -36,22 +57,28 @@ export default function SignIn() {
             if (!authData.user?.email_confirmed_at) {
                 setMessage('Please verify your email first. Check your inbox for verification code.')
                 await supabase.auth.signOut()
+                setLoading(false)
                 return
             }
 
-            // Fetch user profile from database
+            // Wait a moment for session to be established
+            await new Promise(resolve => setTimeout(resolve, 500))
+
+            // Verify session is properly set
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) {
+                throw new Error('Session not established')
+            }
+
+            // Fetch or create user profile
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', authData.user.id)
                 .single()
 
-            if (profileError && profileError.code !== 'PGRST116') {
-                console.error('Profile fetch error:', profileError)
-            }
-
-            // If profile doesn't exist, create one from auth metadata
-            if (!profile) {
+            if (profileError && profileError.code === 'PGRST116') {
+                // Profile doesn't exist, create one
                 const { error: createError } = await supabase
                     .from('profiles')
                     .insert({
@@ -85,25 +112,31 @@ export default function SignIn() {
                 localStorage.removeItem('rememberUser')
             }
 
-            router.push('/dashboard')
+            // Use replace instead of push to prevent back navigation issues
+            router.replace('/dashboard')
         } catch (error: any) {
+            console.error('Sign in error:', error)
             setMessage(error.message || 'Invalid email or password')
-        } finally {
             setLoading(false)
         }
     }
 
+    // Show loading while checking session
+    if (isCheckingSession) {
+        return (
+            <div className="flex min-h-screen w-full bg-black items-center justify-center">
+                <RefreshCw className="w-8 h-8 text-green-400 animate-spin" />
+            </div>
+        )
+    }
+
     return (
         <div className="flex min-h-screen w-full bg-black relative overflow-hidden">
-            {/* Background Gradient - Full Screen Coverage */}
+            {/* Background - Same as before */}
             <div className="fixed inset-0 w-full h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950 to-black"></div>
-                <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="absolute top-[10%] left-[10%] w-[600px] h-[600px] rounded-full bg-green-500/20 blur-[150px]"></div>
-                </div>
-                <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] rounded-full bg-emerald-500/15 blur-[150px]"></div>
-                </div>
+                <div className="absolute top-[10%] left-[10%] w-[600px] h-[600px] rounded-full bg-green-500/20 blur-[150px]"></div>
+                <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] rounded-full bg-emerald-500/15 blur-[150px]"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-green-900/10 blur-[200px]"></div>
                 <div className="absolute top-[30%] right-[20%] w-[400px] h-[400px] rounded-full bg-emerald-600/10 blur-[120px]"></div>
             </div>
@@ -141,16 +174,42 @@ export default function SignIn() {
                             </div>
                         )}
 
-                        {/* Email Input */}
+                        {/* Email Input - FIXED */}
                         <div className="flex items-center w-full bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] h-12 rounded-xl overflow-hidden pl-4 gap-3 mt-6 focus-within:border-green-500/50 transition-colors">
                             <Mail className="w-5 h-5 text-white/30" />
-                            <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-transparent text-white placeholder-white/30 outline-none text-sm w-full h-full pr-4" required />
+                            <input 
+                                type="email" 
+                                placeholder="Email address" 
+                                value={email} 
+                                onChange={(e) => setEmail(e.target.value)} 
+                                className="bg-transparent outline-none w-full h-full pr-4"
+                                style={{ 
+                                    color: 'rgb(255, 255, 255)',
+                                    fontSize: '14px',
+                                    WebkitTextFillColor: 'rgb(255, 255, 255)'
+                                }}
+                                autoComplete="email"
+                                required 
+                            />
                         </div>
 
-                        {/* Password Input */}
+                        {/* Password Input - FIXED */}
                         <div className="flex items-center mt-4 w-full bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] h-12 rounded-xl overflow-hidden pl-4 gap-3 focus-within:border-green-500/50 transition-colors">
                             <Lock className="w-5 h-5 text-white/30" />
-                            <input type={showPassword ? 'text' : 'password'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="bg-transparent text-white placeholder-white/30 outline-none text-sm w-full h-full" required />
+                            <input 
+                                type={showPassword ? 'text' : 'password'} 
+                                placeholder="Password" 
+                                value={password} 
+                                onChange={(e) => setPassword(e.target.value)} 
+                                className="bg-transparent outline-none w-full h-full"
+                                style={{ 
+                                    color: 'rgb(255, 255, 255)',
+                                    fontSize: '14px',
+                                    WebkitTextFillColor: 'rgb(255, 255, 255)'
+                                }}
+                                autoComplete="current-password"
+                                required 
+                            />
                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="pr-4 text-white/30 hover:text-white/50 transition-colors">
                                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                             </button>
@@ -159,7 +218,7 @@ export default function SignIn() {
                         {/* Remember Me & Forgot Password */}
                         <div className="w-full flex items-center justify-between mt-6">
                             <div className="flex items-center gap-2">
-                                <input className="w-4 h-4 accent-green-500 cursor-pointer bg-transparent border-white/20" type="checkbox" id="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
+                                <input className="w-4 h-4 accent-green-500 cursor-pointer" type="checkbox" id="remember" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
                                 <label className="text-sm text-white/40 cursor-pointer" htmlFor="remember">Remember me</label>
                             </div>
                             <Link className="text-sm text-green-400 hover:text-green-300 transition-colors" href="/forgot-password">Forgot password?</Link>

@@ -360,3 +360,31 @@ body {
 body.chat-dropdown-open {
   overflow: hidden;
 }
+
+
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+  color: rgb(255, 255, 255) !important;
+  -webkit-text-fill-color: rgb(255, 255, 255) !important;
+  opacity: 1 !important;
+  font-size: 16px !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.3) !important;
+  opacity: 1 !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: rgb(255, 255, 255) !important;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
