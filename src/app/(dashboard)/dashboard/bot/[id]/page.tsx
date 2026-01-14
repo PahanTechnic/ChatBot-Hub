@@ -36,7 +36,7 @@ export default function BotDetailPage() {
   const [, setUser] = useState<any>(null)
   const [bot, setBot] = useState<BotType | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
-  const [knowledgeCount, setKnowledgeCount] = useState(0)
+  const [knowledgeCount, setKnowledgeCount] = useState()
   const [isLoading, setIsLoading] = useState(true)
   const [isSyncing, setIsSyncing] = useState(false)
   const [copied, setCopied] = useState(false)

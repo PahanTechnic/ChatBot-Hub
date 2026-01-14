@@ -6,7 +6,6 @@
 import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Bot as BotIcon, AlertCircle, Send, Loader2 } from 'lucide-react'
 
 // Icon mapping
@@ -60,6 +59,7 @@ function ChatPageContent() {
   const [inputMessage, setInputMessage] = useState('')
   const [isSending, setIsSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [sessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`)
 
   // Auto-scroll to bottom
@@ -179,6 +179,8 @@ function ChatPageContent() {
       setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsSending(false)
+      // Re-focus input after sending
+      inputRef.current?.focus()
     }
   }
 
@@ -308,30 +310,38 @@ function ChatPageContent() {
           </div>
         </div>
 
-        {/* Chat Input */}
-        <div className="border-t bg-white p-4 flex-shrink-0">
-          <div className="max-w-2xl mx-auto flex items-center space-x-3">
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              disabled={isSending}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:opacity-50"
-            />
-            <button 
-              onClick={sendMessage}
-              disabled={!inputMessage.trim() || isSending}
-              className="px-6 py-3 rounded-full text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-              style={{ backgroundColor: widgetColor }}
-            >
-              {isSending ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Send className="w-5 h-5" />
-              )}
-            </button>
+        {/* Chat Input - iOS Fixed */}
+        <div className="border-t bg-white p-4 flex-shrink-0 safe-area-bottom">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-center gap-2 bg-gray-100 rounded-full p-1 border-2 border-gray-200 focus-within:border-green-500 transition-colors">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                disabled={isSending}
+                className="flex-1 px-4 py-2.5 bg-transparent outline-none text-gray-800 placeholder-gray-500 text-base disabled:opacity-50"
+                style={{
+                  fontSize: '16px', // Prevents iOS zoom on focus
+                  WebkitAppearance: 'none',
+                  appearance: 'none'
+                }}
+              />
+              <button 
+                onClick={sendMessage}
+                disabled={!inputMessage.trim() || isSending}
+                className="w-10 h-10 rounded-full text-white font-medium hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
+                style={{ backgroundColor: widgetColor }}
+              >
+                {isSending ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -339,7 +349,7 @@ function ChatPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-green-50 to-emerald-100">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -447,37 +457,34 @@ function ChatPageContent() {
               </div>
             </div>
 
-            {/* Chat Input */}
-            <div className="border-t bg-white p-4 shrink">
-              <div className="flex items-center space-x-3">
+            {/* Chat Input - iOS Fixed */}
+            <div className="border-t bg-white p-4 flex-shrink-0 safe-area-bottom">
+              <div className="flex items-center gap-2 bg-gray-100 rounded-full p-1 border-2 border-gray-200 focus-within:border-green-500 transition-colors">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type your message..."
                   disabled={isSending}
-                  className="flex-1 px-5 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:border-transparent disabled:opacity-50"
-                  style={{ 
-                    '--tw-ring-color': widgetColor,
-                  } as any}
+                  className="flex-1 px-5 py-3 bg-transparent outline-none text-gray-800 placeholder-gray-500 disabled:opacity-50"
+                  style={{
+                    fontSize: '16px', // Prevents iOS zoom on focus
+                    WebkitAppearance: 'none',
+                    appearance: 'none'
+                  }}
                 />
                 <button 
                   onClick={sendMessage}
                   disabled={!inputMessage.trim() || isSending}
-                  className="px-8 py-3 rounded-full text-white font-medium hover:opacity-90 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                  className="w-12 h-12 rounded-full text-white font-medium hover:opacity-90 active:scale-95 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shrink-0"
                   style={{ backgroundColor: widgetColor }}
                 >
                   {isSending ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Sending</span>
-                    </>
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <>
-                      <Send className="w-5 h-5" />
-                      <span>Send</span>
-                    </>
+                    <Send className="w-5 h-5" />
                   )}
                 </button>
               </div>
@@ -503,7 +510,7 @@ function ChatPageContent() {
 export default function ChatPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-green-50 to-emerald-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           <p className="text-gray-600 font-medium">Loading...</p>

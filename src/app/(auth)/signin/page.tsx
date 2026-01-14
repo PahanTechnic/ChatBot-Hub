@@ -1,7 +1,3 @@
-// ===============================================
-// STEP 2: app/signin/page.tsx - Fixed Version
-// ===============================================
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -26,8 +22,7 @@ export default function SignIn() {
             try {
                 const { data: { session } } = await supabase.auth.getSession()
                 if (session?.user?.email_confirmed_at) {
-                    // Already logged in, redirect to dashboard
-                    router.replace('/dashboard')
+                    router.push('/dashboard')
                     return
                 }
             } catch (error) {
@@ -59,15 +54,6 @@ export default function SignIn() {
                 await supabase.auth.signOut()
                 setLoading(false)
                 return
-            }
-
-            // Wait a moment for session to be established
-            await new Promise(resolve => setTimeout(resolve, 500))
-
-            // Verify session is properly set
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                throw new Error('Session not established')
             }
 
             // Fetch or create user profile
@@ -112,8 +98,14 @@ export default function SignIn() {
                 localStorage.removeItem('rememberUser')
             }
 
-            // Use replace instead of push to prevent back navigation issues
-            router.replace('/dashboard')
+            // Success message
+            setMessage('Sign in successful! Redirecting...')
+
+            // Small delay to show success message, then redirect
+            setTimeout(() => {
+                window.location.href = '/dashboard'
+            }, 500)
+
         } catch (error: any) {
             console.error('Sign in error:', error)
             setMessage(error.message || 'Invalid email or password')
@@ -132,7 +124,7 @@ export default function SignIn() {
 
     return (
         <div className="flex min-h-screen w-full bg-black relative overflow-hidden">
-            {/* Background - Same as before */}
+            {/* Background */}
             <div className="fixed inset-0 w-full h-full">
                 <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-950 to-black"></div>
                 <div className="absolute top-[10%] left-[10%] w-[600px] h-[600px] rounded-full bg-green-500/20 blur-[150px]"></div>
@@ -174,7 +166,7 @@ export default function SignIn() {
                             </div>
                         )}
 
-                        {/* Email Input - FIXED */}
+                        {/* Email Input */}
                         <div className="flex items-center w-full bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] h-12 rounded-xl overflow-hidden pl-4 gap-3 mt-6 focus-within:border-green-500/50 transition-colors">
                             <Mail className="w-5 h-5 text-white/30" />
                             <input 
@@ -193,7 +185,7 @@ export default function SignIn() {
                             />
                         </div>
 
-                        {/* Password Input - FIXED */}
+                        {/* Password Input */}
                         <div className="flex items-center mt-4 w-full bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] h-12 rounded-xl overflow-hidden pl-4 gap-3 focus-within:border-green-500/50 transition-colors">
                             <Lock className="w-5 h-5 text-white/30" />
                             <input 
